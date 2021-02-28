@@ -5,7 +5,7 @@ import logging
 from collections.abc import Sequence
 
 
-def fib(n: int) -> bool:
+def fib(n: int) -> int:
     """Short description.
 
     Args:
