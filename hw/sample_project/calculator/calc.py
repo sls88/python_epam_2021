@@ -1,6 +1,7 @@
 """Homework 1.1.
 
 """
+import logging
 
 
 def check_power_of_2(a: int) -> bool:
@@ -16,5 +17,5 @@ def check_power_of_2(a: int) -> bool:
     try:
         return not (bool(a & (a - 1)))
     except (TypeError, ValueError):
-        print("Incorrect data type")
+        logging.error("Incorrect data type")
         return False

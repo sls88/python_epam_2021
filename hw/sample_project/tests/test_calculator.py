@@ -6,7 +6,7 @@ from epam_python_2021.hw.sample_project.calculator.calc import check_power_of_2
 
 
 @pytest.mark.parametrize(
-    ["value", "expected_result"],
+    ("value", "expected_result"),
     [
         (65536, True),
         (12, False),

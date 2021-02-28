@@ -8,7 +8,7 @@ from epam_python_2021.hw.hw1.check_fib import check_fib
 
 
 @pytest.mark.parametrize(
-    ["value", "expected_result"],
+    ("value", "expected_result"),
     [
         ([0, 1, 1, 2, 3, 5], True),
         ([0, 1, 1, 2, 3, 5, 6], False),

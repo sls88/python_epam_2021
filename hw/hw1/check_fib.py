@@ -1,11 +1,11 @@
 """Homework 1.2.
 
 """
-
+import logging
 from collections.abc import Sequence
 
 
-def fib(n: int):
+def fib(n: int) -> bool:
     """Short description.
 
     Args:
@@ -36,6 +36,6 @@ def check_fib(seq: Sequence[int]) -> bool:
             if fib(i) != seq[i]:
                 return False
     except TypeError:
-        print("Incorrect data type")
+        logging.error("Incorrect data type")
         return False
     return True
