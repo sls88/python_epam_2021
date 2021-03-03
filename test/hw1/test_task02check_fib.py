@@ -1,10 +1,10 @@
 """TEST Homework 1.2."""
 
-from collections import Sequence
+from collections.abc import Sequence
 
 import pytest
 
-from hw.hw1.task02check_fib import check_fib
+from hw.hw1.task02check_fib import check_fibonacci
 
 
 @pytest.mark.parametrize(
@@ -24,7 +24,7 @@ from hw.hw1.task02check_fib import check_fib
         (["0"], False),
     ],
 )
-def test_check_fib(value: Sequence[int], expected_result: bool):
-    actual_result = check_fib(value)
+def test_check_fibonacci(value: Sequence[int], expected_result: bool):
+    actual_result = check_fibonacci(value)
 
     assert actual_result == expected_result

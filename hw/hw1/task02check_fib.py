@@ -1,7 +1,7 @@
 """Homework 1.2."""
 
 import logging
-from collections import Sequence
+from collections.abc import Sequence
 
 
 def fib(n: int) -> int:
@@ -21,19 +21,19 @@ def fib(n: int) -> int:
     return fib(n - 1) + fib(n - 2)
 
 
-def check_fib(seq: Sequence[int]) -> bool:
+def check_fibonacci(data: Sequence[int]) -> bool:
     """Check if a sequence is a fibonacci sequence.
 
     Args:
-        seq: sequence
+        data: sequence
 
     Returns:
         The return value. True if the sequence is Fibonacci sequence
 
     """
     try:
-        for i in range(len(seq)):
-            if fib(i) != seq[i]:
+        for i in range(len(data)):
+            if fib(i) != data[i]:
                 return False
     except TypeError:
         logging.error("Incorrect data type")
