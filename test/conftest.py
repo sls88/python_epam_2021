@@ -1,6 +1,4 @@
-"""conftest.py.
-
-"""
+"""conftest.py."""
 
 import os
 import sys

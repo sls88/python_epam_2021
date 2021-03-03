@@ -1,10 +1,10 @@
-"""TEST Homework 1.2.
+"""TEST Homework 1.2."""
 
-"""
 from collections.abc import Sequence
 
 import pytest
-from epam_python_2021.hw.hw1.check_fib import check_fib
+
+from hw.hw1.task02check_fib import check_fib
 
 
 @pytest.mark.parametrize(

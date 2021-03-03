@@ -1,18 +1,17 @@
-"""Homework 1.2.
+"""Homework 1.2."""
 
-"""
 import logging
 from collections.abc import Sequence
 
 
-def fib(n: int) -> bool:
-    """Short description.
+def fib(n: int) -> int:
+    """Find the fibonacci number.
 
     Args:
-        n: input number of sequence
+        n: number of sequence
 
-    Returns: return fibonacci count
-                    Type: int
+    Returns:
+        The return value. fibonacci count
 
     """
     if not n:
@@ -23,12 +22,13 @@ def fib(n: int) -> bool:
 
 
 def check_fib(seq: Sequence[int]) -> bool:
-    """Short description.
+    """Check if a sequence is a fibonacci sequence.
 
     Args:
-        seq: input sequence
+        seq: sequence
 
-    Returns: return True: fibonacci sequence, False: not fibonacci sequence
+    Returns:
+        The return value. True if the sequence is Fibonacci sequence
 
     """
     try:

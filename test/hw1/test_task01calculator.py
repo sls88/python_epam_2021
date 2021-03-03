@@ -1,8 +1,8 @@
-"""TEST Homework 1.1.
+"""TEST Homework 1.1."""
 
-"""
 import pytest
-from epam_python_2021.hw.sample_project.calculator.calc import check_power_of_2
+
+from hw.hw1.task01calc import check_power_of_2
 
 
 @pytest.mark.parametrize(
@@ -12,7 +12,7 @@ from epam_python_2021.hw.sample_project.calculator.calc import check_power_of_2
         (12, False),
         ("c", False),
         (None, False),
-        (0, True),
+        (0, False),
         (-2, False),
     ],
 )
