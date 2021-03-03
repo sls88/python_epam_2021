@@ -1,6 +1,6 @@
 """TEST Homework 1.2."""
 
-from collections.abc import Sequence
+from typing import Sequence
 
 import pytest
 

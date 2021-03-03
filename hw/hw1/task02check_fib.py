@@ -1,7 +1,7 @@
 """Homework 1.2."""
 
 import logging
-from collections.abc import Sequence
+from typing import Sequence
 
 
 def fib(n: int) -> int:
