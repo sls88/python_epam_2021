@@ -1,6 +1,5 @@
 """Homework 1.2."""
 
-import logging
 from typing import Sequence
 
 
@@ -31,11 +30,7 @@ def check_fibonacci(data: Sequence[int]) -> bool:
         The return value. True if the sequence is Fibonacci sequence
 
     """
-    try:
-        for i in range(len(data)):
-            if fib(i) != data[i]:
-                return False
-    except TypeError:
-        logging.error("Incorrect data type")
-        return False
+    for i in range(len(data)):
+        if fib(i) != data[i]:
+            return False
     return True

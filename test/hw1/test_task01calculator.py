@@ -10,8 +10,6 @@ from hw.hw1.task01calc import check_power_of_2
     [
         (65536, True),
         (12, False),
-        ("c", False),
-        (None, False),
         (0, False),
         (-2, False),
     ],

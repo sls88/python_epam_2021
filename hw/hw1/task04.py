@@ -7,7 +7,7 @@ Given four lists A, B, C, D of integer values,
 
 We guarantee, that all A, B, C, D have same length of N where 0 ≤ N ≤ 1000.
 """
-
+import itertools
 from typing import List
 
 
@@ -24,11 +24,10 @@ def check_sum_of_four(a: List[int], b: List[int], c: List[int], d: List[int]) ->
         The return value. amount of tuples, where A [i] + B [j] + C [k] + D [l] is zero.
 
     """
-    sp1 = [i + j for i in a for j in b]
-    sp2 = [i + j for i in c for j in d]
+    sp1 = [i + j for i, j in itertools.product(a, b)]
+    sp2 = [i + j for i, j in itertools.product(c, d)]
     amount_comb = 0
-    for i in sp1:
-        for j in sp2:
-            if i + j == 0:
-                amount_comb += 1
+    for i, j in itertools.product(sp1, sp2):
+        if i + j == 0:
+            amount_comb += 1
     return amount_comb

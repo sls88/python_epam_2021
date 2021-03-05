@@ -20,6 +20,26 @@ import logging
 from typing import Tuple
 
 
+def validate_number(str_number: str) -> int:
+    """Validate number. Change type.
+
+    Args:
+        str_number: number
+
+    Returns:
+        The return values. number
+
+    """
+    if str_number == "":
+        return None
+    try:
+        int(str_number)
+    except ValueError:
+        logging.error('The number has a "-" literal as a separator. Input data error.')
+        return None
+    return int(str_number)
+
+
 def find_maximum_and_minimum(file_name: str) -> Tuple[int, int]:
     """Find the minimum and maximum number in a text file.
 
@@ -32,20 +52,17 @@ def find_maximum_and_minimum(file_name: str) -> Tuple[int, int]:
         The return values. (min(sequence), max(sequence))
 
     """
-    with open(file_name) as fi:
+    with open(file_name) as file:
+        data = file.readlines()
+        data = " ".join(data)
         numbers_set = set()
         number = ""
-        for line in fi:
-            for lit in line:
-                if "9" >= lit >= "0" or lit == "-":
-                    number += lit
-                else:
-                    if number:
-                        try:
-                            numbers_set.add(int(number))
-                        except ValueError:
-                            logging.error(
-                                'The number has a "-" literal as a separator. Input data error.'
-                            )
-                        number = ""
+        for lit in data:
+            if "9" >= lit >= "0" or lit == "-":
+                number += lit
+            else:
+                validate = validate_number(number)
+                if validate is not None:
+                    numbers_set.add(validate)
+                number = ""
         return (min(numbers_set), max(numbers_set))
