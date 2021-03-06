@@ -54,15 +54,15 @@ def find_maximum_and_minimum(file_name: str) -> Tuple[int, int]:
     """
     with open(file_name) as file:
         data = file.readlines()
-        data = " ".join(data)
-        numbers_set = set()
-        number = ""
-        for lit in data:
-            if "9" >= lit >= "0" or lit == "-":
-                number += lit
-            else:
-                validate = validate_number(number)
-                if validate is not None:
-                    numbers_set.add(validate)
-                number = ""
-        return (min(numbers_set), max(numbers_set))
+    data_joined = " ".join(data)
+    numbers_set = set()
+    number = ""
+    for lit in data_joined:
+        if "9" >= lit >= "0" or lit == "-":
+            number += lit
+        else:
+            validate = validate_number(number)
+            if validate is not None:
+                numbers_set.add(validate)
+            number = ""
+    return (min(numbers_set), max(numbers_set))
