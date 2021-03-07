@@ -5,28 +5,6 @@ from collections import defaultdict
 from typing import List
 
 
-def clear_word_from_punctuation(word: str) -> str:
-    """Сlear the word from punctuation characters around.
-
-    if a double word is written with "-", the letter "-" will not be removed
-
-    Args:
-        word: word
-
-    Returns:
-        The return value. clear word
-
-    """
-    clear_word = word
-    while True:
-        for let in clear_word:
-            if let in "!\"#$%&'()*+,./:;<=>?@[\\]^_`{|}~«»‹›’—":
-                clear_word = clear_word.replace(let, "")
-            elif let == "-":
-                clear_word = clear_word.strip("-")
-        return clear_word
-
-
 def get_longest_diverse_words(file_path: str) -> List[str]:
     """Find 10 longest words consisting from largest amount of unique symbols.
 
@@ -40,7 +18,7 @@ def get_longest_diverse_words(file_path: str) -> List[str]:
     with open(file_path, "rb") as file:
         data = file.read().decode("unicode_escape").strip().split()
     for word_num, word in enumerate(data):
-        data[word_num] = clear_word_from_punctuation(word)
+        data[word_num] = word.strip(string.punctuation + "«»‹›’—")
     data.sort(key=lambda x: len(set(x)))
     return data[len(data) - 10 :]
 
@@ -79,11 +57,11 @@ def count_punctuation_chars(file_path: str) -> int:
     punctuation_count = 0
     with open(file_path, "rb") as file:
         data = file.read().decode("unicode_escape")
-        for stri in data:
-            for let in stri:
-                if let in string.punctuation + "«»‹›’—":
-                    punctuation_count += 1
-        return punctuation_count
+    for stri in data:
+        for let in stri:
+            if let in string.punctuation + "«»‹›’—":
+                punctuation_count += 1
+    return punctuation_count
 
 
 def count_non_ascii_chars(file_path: str) -> int:

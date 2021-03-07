@@ -13,8 +13,6 @@ from hw.hw2.hw2 import major_and_minor_elem
         ([3, 2, 3], (3, 2)),
         ([2, 2, 1, 1, 1, 2, 2], (2, 1)),
         ([2], (2, 2)),
-        (["2", "2", 1, 1, 1, "2", "2"], ("2", 1)),
-        ([None, 1, 1, 1, None], (1, None)),
     ],
 )
 def test_major_and_minor_elem(value: List, expected_result: Tuple[int, int]):
