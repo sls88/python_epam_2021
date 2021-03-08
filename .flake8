@@ -8,8 +8,6 @@ ignore = E203, E501, W503,  # handled by black
 exclude =
     *_venv
     venv_*
-    venv
-    .venv
 max-complexity = 10
 max-cognitive-complexity = 15
 per-file-ignores =
