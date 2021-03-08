@@ -124,7 +124,7 @@ from hw.hw2.hw3 import combinations
             ([1], [5]),
         ),
         (
-            [1],
+            [],
             ([1]),
         ),
     ],

@@ -5,6 +5,23 @@ from collections import defaultdict
 from typing import List
 
 
+def filter_unicode_letters(let: str) -> bool:
+    """Filter unicode letters.
+
+    Args:
+        let: letter
+
+    Returns:
+        The return value. True if is unicode letter
+
+    """
+    try:
+        let.encode("ascii")
+    except UnicodeEncodeError:
+        return True
+    return False
+
+
 def get_longest_diverse_words(file_path: str) -> List[str]:
     """Find 10 longest words consisting from largest amount of unique symbols.
 
@@ -17,10 +34,9 @@ def get_longest_diverse_words(file_path: str) -> List[str]:
     """
     with open(file_path, "rb") as file:
         data = file.read().decode("unicode_escape").strip().split()
-    for word_num, word in enumerate(data):
-        data[word_num] = word.strip(string.punctuation + "«»‹›’—")
-    data.sort(key=lambda x: len(set(x)))
-    return data[len(data) - 10 :]
+    clean_data = [word.strip(string.punctuation + "«»‹›’—") for word in data]
+    clean_data.sort(key=lambda x: len(set(x)))
+    return clean_data[len(data) - 10 :]
 
 
 def get_rarest_char(file_path: str) -> str:
@@ -38,9 +54,8 @@ def get_rarest_char(file_path: str) -> str:
     with open(file_path, "rb") as file:
         data = file.read().decode("unicode_escape")
     dt = defaultdict(int)
-    for stri in data:
-        for let in stri:
-            dt[let] += 1
+    for let in list(data):
+        dt[let] += 1
     return min(dt.items(), key=lambda item: int(item[1]))[0]
 
 
@@ -54,14 +69,9 @@ def count_punctuation_chars(file_path: str) -> int:
         The return value. Amount of punctuation char.
 
     """
-    punctuation_count = 0
     with open(file_path, "rb") as file:
         data = file.read().decode("unicode_escape")
-    for stri in data:
-        for let in stri:
-            if let in string.punctuation + "«»‹›’—":
-                punctuation_count += 1
-    return punctuation_count
+    return sum(1 for let in list(data) if let in (string.punctuation + "«»‹›’—"))
 
 
 def count_non_ascii_chars(file_path: str) -> int:
@@ -76,14 +86,7 @@ def count_non_ascii_chars(file_path: str) -> int:
     """
     with open(file_path, "rb") as file:
         data = file.read().decode("unicode_escape")
-    count_unicode_letters = 0
-    for stri in data:
-        for let in stri:
-            try:
-                let.encode("ascii")
-            except UnicodeEncodeError:
-                count_unicode_letters += 1
-    return count_unicode_letters
+    return sum(1 for let in list(data) if filter_unicode_letters(let))
 
 
 def get_most_common_non_ascii_char(file_path: str) -> str:
@@ -99,12 +102,9 @@ def get_most_common_non_ascii_char(file_path: str) -> str:
     with open(file_path, "rb") as file:
         data = file.read().decode("unicode_escape")
     dt = defaultdict(int)
-    for stri in data:
-        for let in stri:
-            try:
-                let.encode("ascii")
-            except UnicodeEncodeError:
-                dt[let] += 1
+    for let in list(data):
+        if filter_unicode_letters(let):
+            dt[let] += 1
     if dt:
         return max(dt.items(), key=lambda item: int(item[1]))[0]
     else:

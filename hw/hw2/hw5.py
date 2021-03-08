@@ -43,10 +43,9 @@ def custom_range(seq: Sequence, *args: Any, step: int = 1) -> List:
         The return value. ranged list of elements
 
     """
-    if len(args) == 1:
-        for num, elem in enumerate(seq):
-            if elem == args[0]:
-                return list(seq[:num:step])
-        return None
-    else:
+    if len(args) != 1:
         return find_seq_from_many_args(seq, *args)
+    for num, elem in enumerate(seq):
+        if elem == args[0]:
+            return list(seq[:num:step])
+    return None

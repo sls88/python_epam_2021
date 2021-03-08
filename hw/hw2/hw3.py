@@ -1,5 +1,6 @@
 """Homework 2.3."""
 
+import itertools
 from typing import Any, List
 
 
@@ -13,11 +14,8 @@ def combinations(*args: List[Any]) -> List[List]:
         The return value. sequence of all possible lists
 
     """
-    exp_comb = []
-    if len(args) == 1:
-        return [*args]
-    for number_lst in range(len(args) - 1):
-        for i in args[number_lst]:
-            for j in args[number_lst + 1]:
-                exp_comb.append([i, j])
-    return exp_comb
+    return [
+        [*j]
+        for i in range(len(args) - 1)
+        for j in itertools.product(args[i], args[i + 1])
+    ]
