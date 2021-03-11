@@ -16,7 +16,7 @@ def func(a: int, b: int) -> int:
     return (a ** b) ** 2
 
 
-def cache(function: Callable) -> Callable:
+def cache(func: Callable) -> Callable:
     """Cache the result of the function, return from the cache if the function is called again.
 
     Args:
@@ -40,4 +40,4 @@ def cache(function: Callable) -> Callable:
             results[some] = func(*some)
         return results[some]
 
-    return func
+    return function
