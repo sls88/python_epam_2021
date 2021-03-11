@@ -24,18 +24,10 @@ def make_filter(**keywords: Dict) -> Callable:
 
         def keyword_filter_func(el_of_seq: Any) -> Any:
             """Keyword filter."""
-            return value == el_of_seq[key]
+            if key not in el_of_seq:
+                for k in keywords.keys():
+                    return k in el_of_seq and k != key
+            return el_of_seq[key] == value
 
         filter_funcs.append(keyword_filter_func)
     return Filter(filter_funcs)
-
-
-sample_data = [
-    {
-        "name": "Bill",
-        "last_name": "Gilbert",
-        "occupation": "was here",
-        "type": "person",
-    },
-    {"is_dead": True, "kind": "parrot", "type": "bird", "name": "polly"},
-]

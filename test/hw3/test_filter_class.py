@@ -30,6 +30,61 @@ from hw.hw3.hw3_task3 import make_filter
             ),
             [{"is_dead": True, "kind": "parrot", "type": "bird", "name": "polly"}],
         ),
+        (
+            (
+                {"name": "Bill"},
+                [
+                    {
+                        "name": "Bill",
+                        "last_name": "Gilbert",
+                        "occupation": "was here",
+                        "type": "person",
+                    },
+                    {
+                        "is_dead": True,
+                        "kind": "parrot",
+                        "type": "bird",
+                        "name": "polly",
+                    },
+                ],
+            ),
+            [
+                {
+                    "name": "Bill",
+                    "last_name": "Gilbert",
+                    "occupation": "was here",
+                    "type": "person",
+                }
+            ],
+        ),
+        (
+            (
+                {"name": "Bill", "kind": "parrot"},
+                [
+                    {
+                        "name": "Bill",
+                        "last_name": "Gilbert",
+                        "occupation": "was here",
+                        "type": "person",
+                    },
+                    {
+                        "is_dead": True,
+                        "kind": "parrot",
+                        "type": "bird",
+                        "name": "polly",
+                    },
+                ],
+            ),
+            [
+                {
+                    "name": "Bill",
+                    "last_name": "Gilbert",
+                    "occupation": "was here",
+                    "type": "person",
+                },
+                {"is_dead": True, "kind": "parrot", "type": "bird", "name": "polly"},
+            ],
+        ),
     ],
 )
 def test_filter_class(value: Tuple[Any], expected_result: List[Any]):

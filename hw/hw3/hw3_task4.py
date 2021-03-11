@@ -12,7 +12,4 @@ def is_armstrong(number: int) -> bool:
 
     """
     a = list(map(int, str(number)))
-    if sum(list(map(lambda x: x ** 3, a))) == number:
-        return True
-    else:
-        return False
+    return sum(list(map(lambda x: x ** 3, a))) == number

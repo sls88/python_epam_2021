@@ -5,8 +5,9 @@ import hashlib
 import random
 import struct
 import time
+from datetime import timedelta
 from multiprocessing import Pool
-from typing import Any, Tuple
+from typing import Tuple
 
 
 def slow_calculate(value):
@@ -42,7 +43,7 @@ def sum_more_fast_slow_calculate(number: int) -> int:
     return sum(more_fast_slow_calculate(i) for i in range(number))
 
 
-def fast_calculate(number: int) -> Tuple[Any]:
+def fast_calculate(number: int) -> Tuple[int, timedelta]:
     """Find the sum of numbers of slow_calculate() function using multiprocessing method.
 
     Args:
