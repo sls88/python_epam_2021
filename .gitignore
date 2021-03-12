@@ -3,6 +3,7 @@
 venv_*/
 .idea/
 .coverage
+.coverage*
 venv/
 *.pyc
 venv

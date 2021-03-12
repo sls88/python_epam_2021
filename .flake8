@@ -13,6 +13,7 @@ max-cognitive-complexity = 15
 per-file-ignores =
     # No docs and annotation required for tests
     test*.py: D10, D101, D103, S101, ANN
+    hw3_task2.py: ANN001, ANN201, D401, S311, S303, S303
     # Skip unused imports in __init__ files
     __init__.py: F401
 
