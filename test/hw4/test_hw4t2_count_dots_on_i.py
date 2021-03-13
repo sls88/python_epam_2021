@@ -1,10 +1,19 @@
-"""TEST Homework 4.1."""
+"""TEST Homework 4.2."""
 from collections import namedtuple
 from unittest.mock import patch
 
 import pytest
+import requests
 
 from hw.hw4.Homework_4_task2 import count_dots_on_i
+
+
+class TestErrors:
+    def connection_error(self):
+        raise requests.exceptions.ConnectionError
+
+    def timeout_error(self):
+        raise requests.exceptions.Timeout
 
 
 def test_response_ok():
@@ -21,13 +30,13 @@ def test_response_ok_0i():
         assert count_dots_on_i("https://habr.com/ru/post/330034/") == 0
 
 
-def test_connection_error():
-    with patch("requests.exceptions.ConnectionError"):
-        with pytest.raises(ValueError, match="Unreachable"):
-            count_dots_on_i("sss")
+def test_connection_error(monkeypatch):
+    monkeypatch.setattr(requests, "get", TestErrors.connection_error)
+    with pytest.raises(ValueError, match="Unreachable"):
+        count_dots_on_i("https://docs.python.org/")
 
 
-def test_timeout_error():
-    with patch("requests.exceptions.TimeoutError"):
-        with pytest.raises(ValueError, match="Unreachable"):
-            count_dots_on_i("sssa")
+def test_timeout_error(monkeypatch):
+    monkeypatch.setattr(requests, "get", TestErrors.timeout_error)
+    with pytest.raises(ValueError, match="Unreachable"):
+        count_dots_on_i("https://docs.python.org/")
