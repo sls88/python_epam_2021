@@ -4,16 +4,17 @@ from unittest.mock import patch
 
 import pytest
 import requests
+from requests import ConnectionError, Timeout
 
 from hw.hw4.Homework_4_task2 import count_dots_on_i
 
 
 class TestErrors:
     def connection_error(self):
-        raise requests.exceptions.ConnectionError
+        raise ConnectionError
 
     def timeout_error(self):
-        raise requests.exceptions.Timeout
+        raise Timeout
 
 
 def test_response_ok():

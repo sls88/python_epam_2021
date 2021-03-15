@@ -49,7 +49,7 @@ def test_read_magic_number_is_false(path: str, line: str):
 
 @pytest.mark.parametrize(
     ("path", "line"),
-    [("data1.txt", "213gth"), ("data1.txt", "1-1")],
+    [("data1.txt", "213gth"), ("data1.txt", "1-1"), ("data1.txt", "")],
 )
 def test_read_magic_number_exceptions(path: str, line: str):
     create_test_data(path, line)
@@ -67,16 +67,3 @@ def test_read_magic_number_exceptions(path: str, line: str):
 def test_read_magic_number_file_exist(path: str, line: str):
     with pytest.raises(ValueError, match="The case of"):
         read_magic_number(path)
-
-
-@pytest.mark.parametrize(
-    ("path", "line"),
-    [
-        ("data1.txt", ""),
-    ],
-)
-def test_read_magic_number_file_empty(path: str, line: str):
-    create_test_data(path, line)
-    actual_result = read_magic_number(path)
-    os.remove(path)
-    assert actual_result is None

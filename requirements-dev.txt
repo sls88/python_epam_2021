@@ -20,8 +20,8 @@ pre-commit==2.9.3
 pytest>=6.2.1
 pytest-cov>=2.10.1
 
-requests
-certifi>=2020.6.20
-chardet<4,>=3.0.4
-idna<3,>=2.10
-urllib3!=1.25.0,!=1.25.1,<1.26,>=1.21.11
+requests==2.24.0
+certifi==2020.6.20
+chardet==3.0.4
+idna==2.10
+urllib3!===1.21.11

@@ -1,5 +1,6 @@
 """Homework 4.2."""
 import requests
+from requests import RequestException
 
 
 def count_dots_on_i(url: str) -> int:
@@ -13,6 +14,6 @@ def count_dots_on_i(url: str) -> int:
     """
     try:
         res = requests.get(url)
-    except requests.exceptions.RequestException:
+    except RequestException:
         raise ValueError("Unreachable URL {}".format(url))
     return sum(1 for i in list(res.text) if i == "i")
