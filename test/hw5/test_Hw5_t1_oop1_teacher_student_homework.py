@@ -23,7 +23,7 @@ def instance_expired_homework(instance_class_teacher):
 
 
 @pytest.fixture()
-def instance_second_homework_oop_homework(instance_class_teacher):
+def instance_not_expired_homework(instance_class_teacher):
     teacher = instance_class_teacher
     return teacher.create_homework("create 2 simple classes", 5)
 
@@ -64,24 +64,24 @@ def test_expired_homework_text(instance_expired_homework):
     assert actual_result == "Learn functions"
 
 
-def test_second_homework_oop_homework_deadline(instance_second_homework_oop_homework):
-    oop_homework = instance_second_homework_oop_homework
-    actual_result = oop_homework.deadline
+def test_not_expired_homework_deadline(instance_not_expired_homework):
+    not_expired_homework = instance_not_expired_homework
+    actual_result = not_expired_homework.deadline
 
     assert actual_result == datetime.timedelta(days=5)
 
 
-def test_student_do_homework_oop_homework(
-    instance_class_student, instance_second_homework_oop_homework
+def test_not_expired_homework_is_ok(
+    instance_class_student, instance_not_expired_homework
 ):
     student = instance_class_student
-    oop_homework = instance_second_homework_oop_homework
-    actual_result = student.do_homework(oop_homework)
+    not_expired_homework = instance_not_expired_homework
+    actual_result = student.do_homework(not_expired_homework)
 
-    assert actual_result == oop_homework
+    assert actual_result == not_expired_homework
 
 
-def test_student_do_homework_expired_homework(
+def test_expired_homework_is_none(
     instance_class_student, instance_expired_homework, capsys
 ):
     student = instance_class_student
