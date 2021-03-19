@@ -1,7 +1,7 @@
 """Homework 5.1."""
 import datetime
 import sys
-from typing import Any, Optional
+from typing import Optional
 
 
 class Student:
@@ -11,7 +11,7 @@ class Student:
         self.first_name = first_name
         self.last_name = last_name
 
-    def do_homework(self, homework: "Homework") -> Optional[Any]:
+    def do_homework(self, homework: "Homework") -> Optional["Homework"]:
         """Сheck if homework is done.
 
         Args:
@@ -35,7 +35,8 @@ class Teacher:
         self.first_name = first_name
         self.last_name = last_name
 
-    def create_homework(self, text: str, days_amount: int) -> "Homework":
+    @staticmethod
+    def create_homework(text: str, days_amount: int) -> "Homework":
         """Create instance of class Homework.
 
         Args:
@@ -62,6 +63,4 @@ class Homework:
         Returns:
             The return value. True - if the time for the task has not expired
         """
-        if datetime.datetime.now() - self.created < self.deadline:
-            return True
-        return False
+        return datetime.datetime.now() - self.created < self.deadline
