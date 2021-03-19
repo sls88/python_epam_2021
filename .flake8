@@ -4,7 +4,7 @@ ignore = E203, E501, W503,  # handled by black
          D104,  # no docstring in public package
          D200,  # One-line docstring should fit on one line with quotes
          D107,  #  Missing docstring in __init__
-
+         R503, # you should add explicit return at end of the function if function have return value except None
 exclude =
     *_venv
     venv_*
