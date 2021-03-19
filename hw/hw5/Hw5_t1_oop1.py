@@ -25,7 +25,6 @@ class Student:
         if self.homework.is_active():
             return self.homework
         sys.stdout.write("You are late")
-        return None
 
 
 class Teacher:
