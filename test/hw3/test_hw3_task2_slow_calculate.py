@@ -10,6 +10,7 @@ import pytest
 from hw.hw3.hw3_task2 import fast_calculate, sum_more_fast_slow_calculate
 
 
+@pytest.mark.skip(reason="very slow!!!")
 @pytest.mark.parametrize(
     ("value", "expected_result"),
     [
@@ -23,6 +24,7 @@ def test_fast_calculate(value: int, expected_result: Tuple[int, timedelta]):
     assert actual_result[1] < expected_result[1]
 
 
+@pytest.mark.skip(reason="very slow!!!")
 @pytest.mark.parametrize(
     ("value", "expected_result"),
     [(500, 1024259)],
