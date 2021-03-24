@@ -82,15 +82,14 @@ class Teacher(UniversityLifeForm):
             The return value. True if the results of the homework check are satisfactory
                               (the length of the solution is more than 5 letters)
         """
-        good_result = len(homework_result.solution) > 5
-        if good_result:
-            if homework_result.homework in cls.homework_done:
-                cls.homework_done[homework_result.homework] = cls.homework_done[
-                    homework_result.homework
-                ] | {homework_result}
+        good_result_flag = len(homework_result.solution) > 5
+        hw = homework_result.homework
+        if good_result_flag:
+            if hw in cls.homework_done:
+                cls.homework_done[hw] = cls.homework_done[hw] | {homework_result}
             else:
-                cls.homework_done[homework_result.homework] = {homework_result}
-        return good_result
+                cls.homework_done[hw] = {homework_result}
+        return good_result_flag
 
     @classmethod
     def reset_results(
