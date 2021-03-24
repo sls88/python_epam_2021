@@ -1,18 +1,14 @@
 """Homework 6.2."""
 import datetime
-from typing import Optional
+from typing import NoReturn, Optional, Union
 
 
 class DeadlineError(Exception):
     """Raise an error if the deadline occure."""
 
-    pass
-
 
 class HomeworkDoesNotExistError(Exception):
     """Raise an error if the homework to be deleted does not exist."""
-
-    pass
 
 
 class UniversityLifeForm:
@@ -31,7 +27,7 @@ class Student(UniversityLifeForm):
 
     def do_homework(
         self, homework: "Homework", solution: str
-    ) -> Optional["HomeworkResult"]:
+    ) -> Union["HomeworkResult", NoReturn]:
         """Сheck if homework is done.
 
         Args:
@@ -86,19 +82,20 @@ class Teacher(UniversityLifeForm):
             The return value. True if the results of the homework check are satisfactory
                               (the length of the solution is more than 5 letters)
         """
-        if len(homework_result.solution) > 5:
+        good_result = len(homework_result.solution) > 5
+        if good_result:
             if homework_result.homework in cls.homework_done:
                 cls.homework_done[homework_result.homework] = cls.homework_done[
                     homework_result.homework
                 ] | {homework_result}
-                return True
             else:
                 cls.homework_done[homework_result.homework] = {homework_result}
-                return True
-        return False
+        return good_result
 
     @classmethod
-    def reset_results(cls: "Teacher", homework: "Homework" = None) -> None:
+    def reset_results(
+        cls: "Teacher", homework: "Homework" = None
+    ) -> Optional[NoReturn]:
         """Reset results.
 
             If you transfer an instance of Homework - delete only the results of this task from homework_done, if you
@@ -109,13 +106,13 @@ class Teacher(UniversityLifeForm):
         Args:
             homework: instance
         """
-        if homework is None:
-            cls.homework_done.clear()
-        else:
+        if homework:
             if homework in cls.homework_done:
                 del cls.homework_done[homework]
             else:
                 raise HomeworkDoesNotExistError("There is no such homework")
+        else:
+            cls.homework_done.clear()
 
 
 class Homework:
@@ -154,7 +151,7 @@ class HomeworkResult:
         self.end_time = end_time
 
     @staticmethod
-    def __check_type_homework(x: Homework) -> Homework:
+    def __check_type_homework(x: Homework) -> Union[Homework, NoReturn]:
         """Check the data for belonging to the class Homework.
 
             in case of non-compliance raise TypeError("You gave a not Homework object")
@@ -170,7 +167,7 @@ class HomeworkResult:
         raise TypeError("You gave a not Homework object")
 
     @staticmethod
-    def __check_type_author(x: Student) -> Student:
+    def __check_type_author(x: Student) -> Union[Student, NoReturn]:
         """Check the data for belonging to the class Student.
 
             in case of non-compliance raise TypeError("You gave a not Student object")

@@ -3,13 +3,8 @@ import datetime
 
 import pytest
 
-from hw.hw6.hw6_2_oop2 import (
-    DeadlineError,
-    HomeworkDoesNotExistError,
-    HomeworkResult,
-    Student,
-    Teacher,
-)
+from hw.hw6.hw6_2_oop2 import DeadlineError, HomeworkDoesNotExistError, HomeworkResult
+from hw.hw6.hw6_2_oop2 import Student, Teacher
 
 
 @pytest.fixture()
