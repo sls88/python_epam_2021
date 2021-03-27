@@ -2,7 +2,7 @@
 from typing import List
 
 
-def tic_tac_toe_checker(board: List[List]) -> str:
+def tic_tac_toe_checker(x: List[List]) -> str:
     """Analyze the results of the game.
 
     If there is "x" winner, function should return "x wins!"
@@ -11,22 +11,17 @@ def tic_tac_toe_checker(board: List[List]) -> str:
     If board is unfinished, function should return "unfinished!".
 
     Args:
-        board: board list
+        x: board list
 
     Returns:
         The return value. Result
     """
-    x = sum(board, [])
-    horizontal = {
-        x[0 + i] for i in range(0, 9, 3) if x[0 + i] == x[1 + i] == x[2 + i] != "-"
-    }
-    vertical = {x[0 + i] for i in range(3) if x[0 + i] == x[3 + i] == x[6 + i] != "-"}
-    cross = (
-        {x[4]}
-        if (x[0] == x[4] == x[8] != "-" or x[2] == x[4] == x[6] != "-")
-        else set()
-    )
-    rez = horizontal | vertical | cross
+    horizontal = {i[0] for i in x if i[0] != "-" and len(set(i)) == 1}
+    vertical = {a for a, b, c in zip(*x) if a == b == c != "-"}
+    x = sum(x, [])
+    cross_l = {x[4]} if x[0] == x[4] == x[8] != "-" else set()
+    cross_r = {x[4]} if x[2] == x[4] == x[6] != "-" else set()
+    rez = horizontal | vertical | cross_l | cross_r
     if len(rez) == 2:
         return "draw!"
     elif len(rez) == 1:

@@ -19,7 +19,7 @@ from hw.hw7.hw_7_3_tic_tac_toe import tic_tac_toe_checker
         ([["x", "o", "-"], ["x", "o", "-"], ["x", "o", "-"]], "draw!"),
     ],
 )
-def test_tic_tac_toe_checker(value: List[str], expected_result: str):
+def test_tic_tac_toe_checker(value: List[List[str]], expected_result: str):
     actual_result = tic_tac_toe_checker(value)
 
     assert actual_result == expected_result

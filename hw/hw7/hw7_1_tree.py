@@ -1,9 +1,9 @@
 """Homework 7.1."""
 from collections import deque
-from typing import Any
+from typing import Any, Dict
 
 
-def find_occurrences(tree: dict, element: Any) -> int:
+def find_occurrences(tree: Dict, element: Any) -> int:
     """Find the number of occurrences of element in the tree.
 
     Args:
