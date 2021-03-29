@@ -1,0 +1,33 @@
+{
+    "first": [
+        true,
+        "BLUE"
+    ],
+    "second": {
+        "simple_key": [
+            "simple",
+            6542,
+            "of",
+            "RED",
+            "valued"
+        ]
+    },
+    "third": {
+        "abc": "BLUE",
+        "47547": "RED",
+        "complex_key": {
+            "key1": true,
+            "key2": "RED",
+            "key3": [
+                "a",
+                "lot",
+                "of",
+                "fff",
+                {
+                    "nested_key": true
+                }
+            ]
+        }
+    },
+    "fourth": "RED"
+}

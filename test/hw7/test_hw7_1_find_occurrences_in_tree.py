@@ -1,4 +1,5 @@
 """TEST Homework 7.1."""
+import json
 from typing import Any, Dict
 
 import pytest
@@ -6,44 +7,16 @@ import pytest
 from hw.hw7.hw7_1_tree import find_occurrences
 
 
-@pytest.fixture()
+@pytest.fixture(scope="session")
 def example_tree1() -> Dict:
-    return {
-        "first": ["RED", "BLUE"],
-        "second": {
-            "simple_key": ["simple", "list", "of", "RED", "valued"],
-        },
-        "third": {
-            "abc": "BLUE",
-            "jhl": "RED",
-            "complex_key": {
-                "key1": "value1",
-                "key2": "RED",
-                "key3": ["a", "lot", "of", "values", {"nested_key": "RED"}],
-            },
-        },
-        "fourth": "RED",
-    }
+    with open("test/hw7/example_tree1.json", "r") as f:
+        return json.load(f)
 
 
-@pytest.fixture()
+@pytest.fixture(scope="session")
 def example_tree2() -> Dict:
-    return {
-        True: ["RED", "BLUE"],
-        "second": {
-            "simple_key": ["simple", "list", "of", "RED", "valued"],
-        },
-        "third": {
-            "abc": "BLUE",
-            "jhl": "RED",
-            "complex_key": {
-                "key1": "value1",
-                "key2": "RED",
-                "key3": ["a", "lot", True, "values", {"nested_key": True}],
-            },
-        },
-        "fourth": True,
-    }
+    with open("test/hw7/example_tree2.json", "r") as f:
+        return json.load(f)
 
 
 def test_example_from_the_task(example_tree1):
@@ -55,7 +28,7 @@ def test_example_from_the_task(example_tree1):
 def test_another_type(example_tree2):
     actual_result = find_occurrences(example_tree2, True)
 
-    assert actual_result == 4
+    assert actual_result == 3
 
 
 @pytest.mark.parametrize(
