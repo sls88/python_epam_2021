@@ -1,0 +1,4 @@
+class=kek
+last_name=top
+power=9001
+song=shadilay
