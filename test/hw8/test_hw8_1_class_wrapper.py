@@ -7,12 +7,12 @@ from hw.hw8.Hw8_1_class_wrapper import KeyValueStorage
 
 @pytest.fixture()
 def good_data() -> str:
-    return "test\\hw8\\task1_good_data.txt"
+    return "task1_good_data.txt"
 
 
 @pytest.fixture()
 def bad_data_incorrect_key() -> str:
-    return "test\\hw8\\task1_bad_data1.txt"
+    return "task1_bad_data1.txt"
 
 
 def test_bad_data_incorrect_key(bad_data_incorrect_key: str):
