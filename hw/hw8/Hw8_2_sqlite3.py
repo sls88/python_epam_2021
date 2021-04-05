@@ -13,7 +13,6 @@ class TableData:
     def __init__(self, database_name: str, table_name: str) -> None:
         self.database_name = database_name
         self.table_name = table_name
-        self.counter = 0
         self.save = None
 
     def __len__(self) -> int:
@@ -40,9 +39,8 @@ class TableData:
         """
         with sqlite3.connect(self.database_name) as conn:
             cursor = conn.cursor()
-        cursor.execute(
-            f"SELECT name from {self.table_name} where name=:name", {"name": item}
-        )
+        command = f"SELECT name from {self.table_name} where name=:name"
+        cursor.execute(command, {"name": item})
         data = cursor.fetchone()
         return data is not None
 
@@ -63,14 +61,12 @@ class TableData:
             cursor = conn.cursor()
         if item == "name":
             return self.save[0]
-        cursor.execute(
-            f"SELECT * from {self.table_name} where name=:name", {"name": item}
-        )
+        command = f"SELECT * from {self.table_name} where name=:name"
+        cursor.execute(command, {"name": item})
         data = cursor.fetchone()
-        if data:
-            return data
-        else:
+        if not data:
             raise KeyError("The name does not exist")
+        return data
 
     def __iter__(self) -> "TableData":
         """Return an instance of the iterator.
@@ -86,21 +82,18 @@ class TableData:
         Returns:
             The return value. TableData instance
         """
-        if self.counter < len(self):
-            self.counter += 1
-            with sqlite3.connect(self.database_name) as conn:
-                cursor = conn.cursor()
-            if self.counter == 1:
-                cursor.execute(
-                    f"SELECT * from {self.table_name} order by name asc limit 1"
-                )
-                self.save = cursor.fetchone()
-                return self
-            cursor.execute(
-                f"SELECT * from {self.table_name} where name > :name order by name",
-                {"name": self.save[0]},
-            )
+        with sqlite3.connect(self.database_name) as conn:
+            cursor = conn.cursor()
+        if not self.save:
+            command = f"SELECT * from {self.table_name} order by name asc limit 1"
+            cursor.execute(command)
             self.save = cursor.fetchone()
             return self
-        else:
+        command = f"SELECT * from {self.table_name} where name > :name order by name"
+        cursor.execute(command, {"name": self.save[0]})
+        next_ent = cursor.fetchone()
+        if next_ent is None:
+            self.save = None
             raise StopIteration
+        self.save = next_ent
+        return self
