@@ -11,9 +11,8 @@ from hw.hw8.Hw8_2_sqlite3 import TableData
 def database() -> None:
     con = sqlite3.connect("db_test.sqlite")
     cur = con.cursor()
-    with open("test/hw8/SQL_commands.txt") as f:
-        cur.execute(f.readline().strip())
-        cur.execute(f.readline().strip())
+    with open("test/hw8/SQL_commands.sql") as f:
+        cur.executescript(f.read())
     con.commit()
     con.close()
 
