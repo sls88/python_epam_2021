@@ -12,12 +12,13 @@ max-complexity = 10
 max-cognitive-complexity = 15
 per-file-ignores =
     # No docs and annotation required for tests
-    test*.py: D10, D101, D103, S101, ANN
+    test*.py: D10, D101, D103, S101, ANN, PT004
     hw3_task2.py: ANN001, ANN201, D401, S311, S303, S303
     hw6_1_decorator.py: N807, R504, D101
-     #function name '__new__' should not start and end with '__'
-     #you shouldn`t assign value to variable if it will be use only as return value
-     #Missing docstring in public class
+    Hw8_2_sqlite3.py: S608
+    #function name '__new__' should not start and end with '__'
+    #you shouldn`t assign value to variable if it will be use only as return value
+    #Missing docstring in public class
     # Skip unused imports in __init__ files
     __init__.py: F401
 
