@@ -1,5 +1,6 @@
 """Homework 9.1."""
 
+from contextlib import ExitStack
 from pathlib import Path
 from typing import Iterator, List, Union
 
@@ -28,7 +29,7 @@ def merge_sorted_inf_seq(lst: List[Union[Path, str]]) -> Iterator:
     Returns:
         The return value. Iterator object
     """
-    a = [open(Path(i)) for i in lst]
-    fin = list(zip(*map(lambda x: map(int, list(x)), a)))
-    [i.close() for i in a]
-    return iter([j for i in fin for j in i])
+    with ExitStack() as stack:
+        files = [stack.enter_context(open(fname)) for fname in lst]
+        fin = list(zip(*map(lambda x: map(int, list(x)), files)))
+        return iter([j for i in fin for j in i])
