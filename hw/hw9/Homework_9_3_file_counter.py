@@ -49,5 +49,5 @@ def universal_file_counter(
         if tokenizer:
             counter += sum(len(tokenizer(i)) for i in line)
         else:
-            counter += sum(1 for i in line)
+            counter += sum(1 for _ in line)
     return counter
