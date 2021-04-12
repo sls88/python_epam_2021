@@ -16,6 +16,7 @@ per-file-ignores =
     hw3_task2.py: ANN001, ANN201, D401, S311, S303, S303
     hw6_1_decorator.py: N807, R504, D101
     Hw8_2_sqlite3.py: S608
+    Hw_9_1.py: F821, N801, B012
     __init__.py: F401
 
 # Import order https://pypi.org/project/flake8-import-order/
