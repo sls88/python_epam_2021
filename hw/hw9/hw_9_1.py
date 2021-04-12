@@ -77,7 +77,7 @@ class Iterator:
         raise StopIteration
 
 
-class merge_sorted_files:
+class merge_sorted_files:  # noqa
     """Open all transferred files. After work - close.
 
     Args:
