@@ -3,7 +3,7 @@
 import logging
 from pathlib import Path
 from types import TracebackType
-from typing import Iterator, List, NoReturn, Union
+from typing import Iterator, List, NoReturn, TextIO, Union
 
 
 class Line:
@@ -17,7 +17,7 @@ class Line:
         The return value. Next value
     """
 
-    def __init__(self, file: "_io.TextIOWrapper"):
+    def __init__(self, file: TextIO):
         self.file = file
         x = self.file.tell()
         self.next_el = int(self.file.readline())
@@ -60,7 +60,7 @@ class Iterator:
         The return value. Next minimal value
     """
 
-    def __init__(self, files: List["_io.TextIOWrapper"]) -> None:
+    def __init__(self, files: List[TextIO]) -> None:
         self.files = files
         self.lst = [Line(i) for i in self.files]
         self.el = {i.next_el for i in self.lst}
@@ -105,4 +105,3 @@ class merge_sorted_files:
             finally:
                 if exc_val:
                     logging.error(exc_val)
-                continue
