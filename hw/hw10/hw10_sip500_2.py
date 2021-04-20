@@ -2,6 +2,7 @@
 import asyncio
 import json
 from asyncio import Future
+from concurrent.futures import ProcessPoolExecutor
 from operator import itemgetter
 from pathlib import Path
 from typing import Dict, List, Tuple
@@ -12,16 +13,16 @@ import requests
 from bs4 import BeautifulSoup
 
 
-def year_growth(html: str) -> List[str]:
+def year_growth(htmls: str) -> List[str]:
     """Parse annual growth.
 
     Args:
-        html: one page companies
+        htmls: one page companies
 
     Returns:
         The return value. Annual growth from 1 page companies
     """
-    soup = BeautifulSoup(html, "html.parser")
+    soup = BeautifulSoup(htmls, "html.parser")
     data = soup.find_all("span")
     growth = []
     for num, span in enumerate(data):
@@ -30,16 +31,16 @@ def year_growth(html: str) -> List[str]:
     return growth
 
 
-def companies(html: str) -> List[str]:
+def companies(htmls: str) -> List[str]:
     """Parse links of companies from 1 page.
 
     Args:
-        html: one page companies
+        htmls: one page companies
 
     Returns:
         The return value. links from 1 page companies
     """
-    soup = BeautifulSoup(html, "html.parser")
+    soup = BeautifulSoup(htmls, "html.parser")
     mn = []
     for link in soup.find_all("a"):
         k = link.get("href")
@@ -139,7 +140,7 @@ async def fetch_response(url: str) -> str:
             return await response.text()
 
 
-async def result(urls: List[str]) -> Future:
+async def _result(urls: List[str]) -> Future:
     """Get the result.
 
     Args:
@@ -152,15 +153,83 @@ async def result(urls: List[str]) -> Future:
     return await asyncio.gather(*tasks)
 
 
-async def pages(
-    urls: List[str], growth: Dict[str, str], rub_usd: float
-) -> Tuple[List[Dict], List[Dict], List[Dict], List[Dict]]:
-    """Treat the parsing results and return data to generate json.
+def price(cnp: Tuple[str, str, float]) -> Dict:
+    """Form a resource.
 
     Args:
-        urls: urls
-        growth: link on the page of company/annual growth
-        growth: rub per 1 usd
+        cnp: code company, name company, price per share (usd)
+
+    Returns:
+        The return value. Dict {code, name, price}
+    """
+    rub_usd = centrobank()
+    return {"code": cnp[0], "name": cnp[1], "price": round(cnp[2] * rub_usd, 2)}
+
+
+def p_e_ratio(cnp: Tuple[str, str, float], soup: BeautifulSoup) -> Dict:
+    """Form a resource.
+
+    Args:
+        cnp: code company, name company, price per share (usd)
+        soup: instance of parser
+
+    Returns:
+        The return value. Dict {code, name, P/E}
+    """
+    return {"code": cnp[0], "name": cnp[1], "P/E": p_e(soup)}
+
+
+def profit(cnp: Tuple[str, str, float], soup: BeautifulSoup) -> Dict:
+    """Form a resource.
+
+    Args:
+        cnp: code company, name company, price per share (usd)
+        soup: instance of parser
+
+    Returns:
+        The return value. Dict {code, name, potential profit}
+    """
+    return {"code": cnp[0], "name": cnp[1], "potential profit": potential_profit(soup)}
+
+
+def m_growth(cnp: Tuple[str, str, float], growth: str) -> Dict:
+    """Form a resource.
+
+    Args:
+        cnp: code company, name company, price per share (usd)
+        growth: year growth of company
+
+    Returns:
+        The return value. Dict {code, name, growth}
+    """
+    return {"code": cnp[0], "name": cnp[1], "growth": growth}
+
+
+def main_parser(html: str, growth: str) -> Tuple[Dict, Dict, Dict, Dict]:
+    """Parse all indicators from 1 html page.
+
+    Args:
+        html: html page of company
+        growth: year growth of company
+
+    Returns:
+        The return value. All indicators in special form
+    """
+    soup = BeautifulSoup(html, "html.parser")
+    cnp = code_name_price(soup)
+    return price(cnp), p_e_ratio(cnp, soup), profit(cnp, soup), m_growth(cnp, growth)
+
+
+def four_sorted_list_10(
+    lst1: List[Dict], lst2: List[Dict], lst3: List[Dict], lst4: List[Dict]
+) -> Tuple[List[Dict], List[Dict], List[Dict], List[Dict]]:
+    """Sort 4 lists of dictionaries.
+
+    Args:
+        lst1: list shares prices in rub
+        lst2: list p_e ratio indicators
+        lst3: list potential profit
+        lst4: list annual growth
 
     Returns:
         The return value. 10 companies with the most expensive shares in rubles.
@@ -168,35 +237,61 @@ async def pages(
                           10 companies that would bring the most profit if they were bought at the lowest
                                 and sold at the highest in the last year.
                           10 companies that showed the highest growth in the last year
-
     """
-    pages_htmls = await result(urls)
-    most_exp = []
-    most_p_e = []
-    most_pot_profit = []
-    most_growth = []
-    for num, html in enumerate(pages_htmls):
-        soup = BeautifulSoup(html, "html.parser")
-        cnp = code_name_price(soup)
-        comp = {"code": cnp[0], "name": cnp[1]}
-        comp["price"] = round(cnp[2] * rub_usd, 2)
-        most_exp.append(comp)
-        comp = {"code": cnp[0], "name": cnp[1]}
-        comp["P/E"] = p_e(soup)
-        most_p_e.append(comp)
-        comp = {"code": cnp[0], "name": cnp[1]}
-        comp["potential profit"] = potential_profit(soup)
-        most_pot_profit.append(comp)
-        comp = {"code": cnp[0], "name": cnp[1]}
-        comp["growth"] = growth[urls[num]]
-        most_growth.append(comp)
-    most_exp = sorted(most_exp, key=itemgetter("price"), reverse=True)
-    most_p_e = sorted(most_p_e, key=itemgetter("P/E"))
-    most_pot_profit = sorted(
-        most_pot_profit, key=itemgetter("potential profit"), reverse=True
-    )
-    most_growth = sorted(most_growth, key=itemgetter("growth"), reverse=True)
-    return most_exp[:10], most_p_e[:10], most_pot_profit[:10], most_growth[:10]
+    price = sorted(lst1, key=itemgetter("price"), reverse=True)
+    p_e = sorted(lst2, key=itemgetter("P/E"))
+    profit = sorted(lst3, key=itemgetter("potential profit"), reverse=True)
+    growth = sorted(lst4, key=itemgetter("growth"), reverse=True)
+    return price[:10], p_e[:10], profit[:10], growth[:10]
+
+
+async def get_all_pages() -> Tuple[List[str], List[str]]:
+    """Get a list of html pages of all companies and annual growth.
+
+    Returns:
+        The return value. Html pages of all companies and annual growth
+    """
+    urls = [
+        f"https://markets.businessinsider.com/index/components/s&p_500?p={i}"
+        for i in range(1, 11)
+    ]
+    htmls = await _result(urls)
+    all_html_pages = []
+    growth = []
+    for page_main_html in htmls:
+        links = companies(page_main_html)
+        growth += year_growth(page_main_html)
+        pages_htmls = await _result(links)
+        for html in pages_htmls:
+            all_html_pages += [html]
+    return all_html_pages, growth
+
+
+async def resources_for_write(
+    htmls: List[str], growth: List[str]
+) -> Tuple[List[Dict], List[Dict], List[Dict], List[Dict]]:
+    """Prepare and pass resource to write json file.
+
+    Args:
+        htmls: html pages of all companies
+        growth: annual growth
+
+    Returns:
+        The return value. 10 companies with the most expensive shares in rubles.
+                          10 companies with the lowest P / E ratio.
+                          10 companies that would bring the most profit if they were bought at the lowest
+                                and sold at the highest in the last year.
+                          10 companies that showed the highest growth in the last year
+    """
+    with ProcessPoolExecutor(max_workers=17) as pool:
+        resources = pool.map(main_parser, *(htmls, growth))
+    most_price, low_p_e, most_pot_profit, most_growth = [], [], [], []
+    for res in resources:
+        most_price.append(res[0])
+        low_p_e.append(res[1])
+        most_pot_profit.append(res[2])
+        most_growth.append(res[3])
+    return four_sorted_list_10(most_price, low_p_e, most_pot_profit, most_growth)
 
 
 async def write_json(data: List[Dict], filename: Path) -> None:
@@ -207,11 +302,11 @@ async def write_json(data: List[Dict], filename: Path) -> None:
         filename: Path
     """
     async with aiofiles.open(filename, mode="a") as f:
-        await f.write(json.dumps(data))
+        await f.write(json.dumps(data, indent=4, sort_keys=True))
 
 
 async def write_files(
-    res: Tuple[List[Dict], List[Dict], List[Dict], List[Dict]],
+    resource: Tuple[List[Dict], List[Dict], List[Dict], List[Dict]],
     path1: Path,
     path2: Path,
     path3: Path,
@@ -220,17 +315,17 @@ async def write_files(
     """Write 4 files asynchronously.
 
     Args:
-        res: data
+        resource: data for write
         path1: Path of 1 file
         path2: Path of 2 file
         path3: Path of 3 file
         path4: Path of 4 file
     """
     files = [
-        (res[0], Path(path1)),
-        (res[1], Path(path2)),
-        (res[2], Path(path3)),
-        (res[3], Path(path4)),
+        (resource[0], Path(path1)),
+        (resource[1], Path(path2)),
+        (resource[2], Path(path3)),
+        (resource[3], Path(path4)),
     ]
     tasks_write = [asyncio.create_task(write_json(*i)) for i in files]
     await asyncio.gather(*tasks_write)
@@ -245,21 +340,11 @@ async def main(path1: Path, path2: Path, path3: Path, path4: Path) -> None:
         path3: Path of 3 file
         path4: Path of 4 file
     """
-    rub_usd = centrobank()
-    urls = [
-        f"https://markets.businessinsider.com/index/components/s&p_500?p={i}"
-        for i in range(1, 11)
-    ]
-    htmls = await result(urls)
-    all_urls = []
-    growth = {}
-    for page_htmls in htmls:
-        links = companies(page_htmls)
-        y_gr = year_growth(page_htmls)
-        all_urls += links
-        growth.update({link: growth for link, growth in zip(links, y_gr)})
-    res = await pages(all_urls, growth, rub_usd)
-    await write_files(res, Path(path1), Path(path2), Path(path3), Path(path4))
+    results = await get_all_pages()
+    htmls = results[0]
+    growth = results[1]
+    resource = await resources_for_write(htmls, growth)
+    await write_files(resource, Path(path1), Path(path2), Path(path3), Path(path4))
 
 
 if __name__ == "__main__":

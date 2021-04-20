@@ -30,23 +30,14 @@ def xml_sberbank():
 
 
 @pytest.fixture()
-def res():
-    return (
-        [{"1": 1}, {"2": 2}],
-        [{"4": 4}, {"6": 6}],
-        [{"8": 8}, {"10": 10}],
-        [{"12": 12}, {"14": 14}],
-    )
+def test_json_resource():
+    return [[{str(i): i}, {str(i + 1): i + 1}] for i in range(1, 8, 2)]
 
 
 @pytest.fixture()
 def paths():
-    return (
-        Path("test/hw10/1.json"),
-        Path("test/hw10/2.json"),
-        Path("test/hw10/3.json"),
-        Path("test/hw10/4.json"),
-    )
+    paths = ("1.json", "2.json", "3.json", "4.json")
+    return [Path(el) for el in paths]
 
 
 def test_code_name_price(data_page_company):
@@ -96,13 +87,12 @@ def test_centrobank():
 
 
 @pytest.mark.asyncio
-async def test_write_files(res):
-    path1, path2, path3, path4 = (
-        Path("1.json"),
-        Path("2.json"),
-        Path("3.json"),
-        Path("4.json"),
-    )
+async def test_write_files(test_json_resource, paths):
+    res = test_json_resource
+    path1 = paths[0]
+    path2 = paths[1]
+    path3 = paths[2]
+    path4 = paths[3]
     try:
         await write_files(res, Path(path1), Path(path2), Path(path3), Path(path4))
         with open(path1) as f:
