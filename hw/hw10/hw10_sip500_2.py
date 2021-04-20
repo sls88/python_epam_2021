@@ -13,16 +13,16 @@ import requests
 from bs4 import BeautifulSoup
 
 
-def year_growth(htmls: str) -> List[str]:
+def year_growth(html: str) -> List[str]:
     """Parse annual growth.
 
     Args:
-        htmls: one page companies
+        html: one page companies
 
     Returns:
         The return value. Annual growth from 1 page companies
     """
-    soup = BeautifulSoup(htmls, "html.parser")
+    soup = BeautifulSoup(html, "html.parser")
     data = soup.find_all("span")
     growth = []
     for num, span in enumerate(data):
@@ -31,16 +31,16 @@ def year_growth(htmls: str) -> List[str]:
     return growth
 
 
-def companies(htmls: str) -> List[str]:
+def companies(html: str) -> List[str]:
     """Parse links of companies from 1 page.
 
     Args:
-        htmls: one page companies
+        html: one page companies
 
     Returns:
         The return value. links from 1 page companies
     """
-    soup = BeautifulSoup(htmls, "html.parser")
+    soup = BeautifulSoup(html, "html.parser")
     mn = []
     for link in soup.find_all("a"):
         k = link.get("href")
@@ -140,7 +140,7 @@ async def fetch_response(url: str) -> str:
             return await response.text()
 
 
-async def _result(urls: List[str]) -> Future:
+async def get_async_result(urls: List[str]) -> Future:
     """Get the result.
 
     Args:
@@ -205,7 +205,10 @@ def m_growth(cnp: Tuple[str, str, float], growth: str) -> Dict:
     return {"code": cnp[0], "name": cnp[1], "growth": growth}
 
 
-def main_parser(html: str, growth: str) -> Tuple[Dict, Dict, Dict, Dict]:
+TupleDict = Tuple[Dict, Dict, Dict, Dict]
+
+
+def main_parser(html: str, growth: str) -> TupleDict:
     """Parse all indicators from 1 html page.
 
     Args:
@@ -220,9 +223,11 @@ def main_parser(html: str, growth: str) -> Tuple[Dict, Dict, Dict, Dict]:
     return price(cnp), p_e_ratio(cnp, soup), profit(cnp, soup), m_growth(cnp, growth)
 
 
-def four_sorted_list_10(
-    lst1: List[Dict], lst2: List[Dict], lst3: List[Dict], lst4: List[Dict]
-) -> Tuple[List[Dict], List[Dict], List[Dict], List[Dict]]:
+TupleListDict = Tuple[List[Dict], List[Dict], List[Dict], List[Dict]]
+LD = List[Dict]
+
+
+def four_sorted_list_10(lst1: LD, lst2: LD, lst3: LD, lst4: LD) -> TupleListDict:
     """Sort 4 lists of dictionaries.
 
     Args:
@@ -255,21 +260,19 @@ async def get_all_pages() -> Tuple[List[str], List[str]]:
         f"https://markets.businessinsider.com/index/components/s&p_500?p={i}"
         for i in range(1, 11)
     ]
-    htmls = await _result(urls)
+    htmls = await get_async_result(urls)
     all_html_pages = []
     growth = []
     for page_main_html in htmls:
         links = companies(page_main_html)
         growth += year_growth(page_main_html)
-        pages_htmls = await _result(links)
+        pages_htmls = await get_async_result(links)
         for html in pages_htmls:
             all_html_pages += [html]
     return all_html_pages, growth
 
 
-async def resources_for_write(
-    htmls: List[str], growth: List[str]
-) -> Tuple[List[Dict], List[Dict], List[Dict], List[Dict]]:
+async def resources_for_write(htmls: List[str], growth: List[str]) -> TupleListDict:
     """Prepare and pass resource to write json file.
 
     Args:
@@ -294,7 +297,7 @@ async def resources_for_write(
     return four_sorted_list_10(most_price, low_p_e, most_pot_profit, most_growth)
 
 
-async def write_json(data: List[Dict], filename: Path) -> None:
+async def write_json(data: LD, filename: Path) -> None:
     """Write json file.
 
     Args:
@@ -306,11 +309,7 @@ async def write_json(data: List[Dict], filename: Path) -> None:
 
 
 async def write_files(
-    resource: Tuple[List[Dict], List[Dict], List[Dict], List[Dict]],
-    path1: Path,
-    path2: Path,
-    path3: Path,
-    path4: Path,
+    resource: TupleListDict, path1: Path, path2: Path, path3: Path, path4: Path
 ) -> None:
     """Write 4 files asynchronously.
 
