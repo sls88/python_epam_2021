@@ -356,11 +356,6 @@ async def main(*paths: Path) -> None:
 
 if __name__ == "__main__":
     loop = asyncio.get_event_loop()
-    loop.run_until_complete(
-        main(
-            Path("price.json"),
-            Path("p_e.json"),
-            Path("profit.json"),
-            Path("growth.json"),
-        )
-    )
+    paths = ("price.json", "p_e.json", "profit.json", "growth.json")
+    paths = tuple(Path(el) for el in paths)
+    loop.run_until_complete(main(*paths))

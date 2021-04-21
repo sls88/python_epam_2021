@@ -8,8 +8,8 @@ from unittest.mock import patch
 import pytest
 from bs4 import BeautifulSoup
 
-from hw.hw10.hw10_sip500_2 import StockStat, centrobank, code_name_price, companies
-from hw.hw10.hw10_sip500_2 import p_e, potential_profit, write_files, year_growth
+from hw.hw10.hw10_sip500 import StockStat, centrobank, code_name_price, companies
+from hw.hw10.hw10_sip500 import p_e, potential_profit, write_files, year_growth
 
 
 @pytest.fixture()
@@ -33,10 +33,7 @@ def xml_sberbank():
 def test_json_resource():
     res = tuple([{str(i): i}, {str(i + 1): i + 1}] for i in range(1, 8, 2))
     obj = StockStat([], [], [], [])
-    obj.price = res[0]
-    obj.p_e = res[1]
-    obj.profit = res[2]
-    obj.growth = res[3]
+    obj.price, obj.p_e, obj.profit, obj.growth = res
     return obj, res
 
 
@@ -107,4 +104,5 @@ async def test_write_files(test_json_resource, paths):
         actual_result = [read_file(i) == j for i, j in zip(paths, tuple_lists)]
         assert actual_result == [True, True, True, True]
     finally:
-        [os.remove(i) for i in paths]
+        for path in paths:
+            os.remove(path)
