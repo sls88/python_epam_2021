@@ -8,7 +8,7 @@ from unittest.mock import patch
 import pytest
 from bs4 import BeautifulSoup
 
-from hw.hw10.hw10_sip500_2 import centrobank, code_name_price, companies
+from hw.hw10.hw10_sip500_2 import StockStat, centrobank, code_name_price, companies
 from hw.hw10.hw10_sip500_2 import p_e, potential_profit, write_files, year_growth
 
 
@@ -31,13 +31,19 @@ def xml_sberbank():
 
 @pytest.fixture()
 def test_json_resource():
-    return [[{str(i): i}, {str(i + 1): i + 1}] for i in range(1, 8, 2)]
+    res = tuple([{str(i): i}, {str(i + 1): i + 1}] for i in range(1, 8, 2))
+    obj = StockStat([], [], [], [])
+    obj.price = res[0]
+    obj.p_e = res[1]
+    obj.profit = res[2]
+    obj.growth = res[3]
+    return obj, res
 
 
 @pytest.fixture()
 def paths():
-    paths = ("1.json", "2.json", "3.json", "4.json")
-    return [Path(el) for el in paths]
+    paths = ("price.json", "p_e.json", "profit.json", "growth.json")
+    return tuple(Path(el) for el in paths)
 
 
 def test_code_name_price(data_page_company):
@@ -86,33 +92,19 @@ def test_centrobank():
         assert centrobank() == 76.2491
 
 
+def read_file(path):
+    with open(path) as f:
+        return json.load(f)
+
+
 @pytest.mark.asyncio
 async def test_write_files(test_json_resource, paths):
     res = test_json_resource
-    path1 = paths[0]
-    path2 = paths[1]
-    path3 = paths[2]
-    path4 = paths[3]
+    obj_stock_stat = res[0]
+    tuple_lists = res[1]
     try:
-        await write_files(res, Path(path1), Path(path2), Path(path3), Path(path4))
-        with open(path1) as f:
-            actual_result = json.load(f)
-            expected_result = res[0]
-        with open(path2) as f:
-            actual_result2 = json.load(f)
-            expected_result2 = res[1]
-        with open(path3) as f:
-            actual_result3 = json.load(f)
-            expected_result3 = res[2]
-        with open(path4) as f:
-            actual_result4 = json.load(f)
-            expected_result4 = res[3]
-        assert actual_result == expected_result
-        assert actual_result2 == expected_result2
-        assert actual_result3 == expected_result3
-        assert actual_result4 == expected_result4
+        await write_files(obj_stock_stat, *paths)
+        actual_result = [read_file(i) == j for i, j in zip(paths, tuple_lists)]
+        assert actual_result == [True, True, True, True]
     finally:
-        os.remove(path1)
-        os.remove(path2)
-        os.remove(path3)
-        os.remove(path4)
+        [os.remove(i) for i in paths]

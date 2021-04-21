@@ -3,6 +3,7 @@ import asyncio
 import json
 from asyncio import Future
 from concurrent.futures import ProcessPoolExecutor
+from dataclasses import dataclass
 from operator import itemgetter
 from pathlib import Path
 from typing import Dict, List, Tuple
@@ -223,31 +224,48 @@ def main_parser(html: str, growth: str) -> TupleDict:
     return price(cnp), p_e_ratio(cnp, soup), profit(cnp, soup), m_growth(cnp, growth)
 
 
-TupleListDict = Tuple[List[Dict], List[Dict], List[Dict], List[Dict]]
-LD = List[Dict]
-
-
-def four_sorted_list_10(lst1: LD, lst2: LD, lst3: LD, lst4: LD) -> TupleListDict:
-    """Sort 4 lists of dictionaries.
+@dataclass
+class StockStat:
+    """Save 4 lists of dictionaries stock statistic.
 
     Args:
-        lst1: list shares prices in rub
-        lst2: list p_e ratio indicators
-        lst3: list potential profit
-        lst4: list annual growth
+        price: list shares prices in rub
+        p_e: list p_e ratio indicators
+        profit: list potential profit
+        growth: list annual growth
+    """
+
+    price: List[Dict]
+    p_e: List[Dict]
+    profit: List[Dict]
+    growth: List[Dict]
+
+
+def four_sorted_list_10(stock_stat_obj: StockStat) -> StockStat:
+    """Get 4 lists of stock statistic from dataclass, sort and write 10 pos. from every list back.
+
+        10 companies with the most expensive shares in rubles.
+        10 companies with the lowest P / E ratio.
+        10 companies that would bring the most profit if they were bought at the lowest
+                and sold at the highest in the last year.
+        10 companies that showed the highest growth in the last year
+    Args:
+        stock_stat_obj: dataclass object
 
     Returns:
-        The return value. 10 companies with the most expensive shares in rubles.
-                          10 companies with the lowest P / E ratio.
-                          10 companies that would bring the most profit if they were bought at the lowest
-                                and sold at the highest in the last year.
-                          10 companies that showed the highest growth in the last year
+        The return value. Modified dataclass object
     """
-    price = sorted(lst1, key=itemgetter("price"), reverse=True)
-    p_e = sorted(lst2, key=itemgetter("P/E"))
-    profit = sorted(lst3, key=itemgetter("potential profit"), reverse=True)
-    growth = sorted(lst4, key=itemgetter("growth"), reverse=True)
-    return price[:10], p_e[:10], profit[:10], growth[:10]
+    stock_stat_obj.price = sorted(
+        stock_stat_obj.price, key=itemgetter("price"), reverse=True
+    )[:10]
+    stock_stat_obj.p_e = sorted(stock_stat_obj.p_e, key=itemgetter("P/E"))[:10]
+    stock_stat_obj.profit = sorted(
+        stock_stat_obj.profit, key=itemgetter("potential profit"), reverse=True
+    )[:10]
+    stock_stat_obj.growth = sorted(
+        stock_stat_obj.growth, key=itemgetter("growth"), reverse=True
+    )[:10]
+    return stock_stat_obj
 
 
 async def get_all_pages() -> Tuple[List[str], List[str]]:
@@ -272,32 +290,33 @@ async def get_all_pages() -> Tuple[List[str], List[str]]:
     return all_html_pages, growth
 
 
-async def resources_for_write(htmls: List[str], growth: List[str]) -> TupleListDict:
+async def resources_for_write(htmls: List[str], growth: List[str]) -> StockStat:
     """Prepare and pass resource to write json file.
 
+        10 companies with the most expensive shares in rubles.
+        10 companies with the lowest P / E ratio.
+        10 companies that would bring the most profit if they were bought at the lowest
+             and sold at the highest in the last year.
+        10 companies that showed the highest growth in the last year
     Args:
         htmls: html pages of all companies
         growth: annual growth
 
     Returns:
-        The return value. 10 companies with the most expensive shares in rubles.
-                          10 companies with the lowest P / E ratio.
-                          10 companies that would bring the most profit if they were bought at the lowest
-                                and sold at the highest in the last year.
-                          10 companies that showed the highest growth in the last year
+        The return value. Dataclass object
     """
     with ProcessPoolExecutor(max_workers=17) as pool:
         resources = pool.map(main_parser, *(htmls, growth))
-    most_price, low_p_e, most_pot_profit, most_growth = [], [], [], []
+    stock_stat_obj = StockStat([], [], [], [])
     for res in resources:
-        most_price.append(res[0])
-        low_p_e.append(res[1])
-        most_pot_profit.append(res[2])
-        most_growth.append(res[3])
-    return four_sorted_list_10(most_price, low_p_e, most_pot_profit, most_growth)
+        stock_stat_obj.price.append(res[0])
+        stock_stat_obj.p_e.append(res[1])
+        stock_stat_obj.profit.append(res[2])
+        stock_stat_obj.growth.append(res[3])
+    return four_sorted_list_10(stock_stat_obj)
 
 
-async def write_json(data: LD, filename: Path) -> None:
+async def write_json(data: List[Dict], filename: Path) -> None:
     """Write json file.
 
     Args:
@@ -308,46 +327,40 @@ async def write_json(data: LD, filename: Path) -> None:
         await f.write(json.dumps(data, indent=4, sort_keys=True))
 
 
-async def write_files(
-    resource: TupleListDict, path1: Path, path2: Path, path3: Path, path4: Path
-) -> None:
+async def write_files(resource: StockStat, *paths: Path) -> None:
     """Write 4 files asynchronously.
 
     Args:
-        resource: data for write
-        path1: Path of 1 file
-        path2: Path of 2 file
-        path3: Path of 3 file
-        path4: Path of 4 file
+        resource: data for write from dataclass object
+        *paths: 4 Paths to save files
     """
-    files = [
-        (resource[0], Path(path1)),
-        (resource[1], Path(path2)),
-        (resource[2], Path(path3)),
-        (resource[3], Path(path4)),
-    ]
+    resource = (resource.price, resource.p_e, resource.profit, resource.growth)
+    files = [*zip(resource, paths)]
     tasks_write = [asyncio.create_task(write_json(*i)) for i in files]
     await asyncio.gather(*tasks_write)
 
 
-async def main(path1: Path, path2: Path, path3: Path, path4: Path) -> None:
+async def main(*paths: Path) -> None:
     """Parse information about companies in the S&P 500 index and load to 4 json files.
 
     Args:
-        path1: Path of 1 file
-        path2: Path of 2 file
-        path3: Path of 3 file
-        path4: Path of 4 file
+        *paths: 4 Paths to save files
     """
     results = await get_all_pages()
     htmls = results[0]
     growth = results[1]
     resource = await resources_for_write(htmls, growth)
-    await write_files(resource, Path(path1), Path(path2), Path(path3), Path(path4))
+    paths = [Path(path) for path in paths]
+    await write_files(resource, *paths)
 
 
 if __name__ == "__main__":
     loop = asyncio.get_event_loop()
     loop.run_until_complete(
-        main(Path("1.json"), Path("2.json"), Path("3.json"), Path("4.json"))
+        main(
+            Path("price.json"),
+            Path("p_e.json"),
+            Path("profit.json"),
+            Path("growth.json"),
+        )
     )
