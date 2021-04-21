@@ -32,8 +32,7 @@ def xml_sberbank():
 @pytest.fixture()
 def test_json_resource():
     res = tuple([{str(i): i}, {str(i + 1): i + 1}] for i in range(1, 8, 2))
-    obj = StockStat([], [], [], [])
-    obj.price, obj.p_e, obj.profit, obj.growth = res
+    obj = StockStat(*res)
     return obj, res
 
 
