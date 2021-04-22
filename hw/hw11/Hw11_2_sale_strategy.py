@@ -27,9 +27,7 @@ class Order:
         Returns:
             The return value. Positive price
         """
-        if self.sale > self.price:
-            return self.price
-        return self.sale
+        return self.price if self.sale > self.price else self.sale
 
     def _calculate_discount(self) -> float:
         """Select the maximum discount and check total price.
