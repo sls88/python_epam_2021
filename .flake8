@@ -8,6 +8,7 @@ ignore = E203, E501, W503,  # handled by black
 exclude =
     *_venv
     venv_*
+    */hw12
 max-complexity = 10
 max-cognitive-complexity = 15
 per-file-ignores =
@@ -17,6 +18,13 @@ per-file-ignores =
     hw6_1_decorator.py: N807, R504, D101
     Hw8_2_sqlite3.py: S608
     __init__.py: F401
+    apps.py: D101
+    urls.py: D400
+    models.py: D101, D105
+    0002_auto_20210426_1251.py: I201, D103, ANN001, ANN201, N806, D101
+    settings.py: S105
+    0001_initial.py: I100, D101
+    manage.py: ANN201
 
 # Import order https://pypi.org/project/flake8-import-order/
 application-import-names = hw
