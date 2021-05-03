@@ -25,6 +25,7 @@ per-file-ignores =
     settings.py: S105
     0001_initial.py: I100, D101
     manage.py: ANN201
+    conf.py: D100, A001
 
 # Import order https://pypi.org/project/flake8-import-order/
 application-import-names = hw

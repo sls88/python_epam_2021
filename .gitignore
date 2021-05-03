@@ -7,3 +7,4 @@ venv_*/
 venv/
 *.pyc
 venv
+*/epam2021sphinx
